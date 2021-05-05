@@ -1,11 +1,10 @@
-import { useEffect } from 'react'
-import { api } from '../../services/api'
+import { useContext } from 'react'
+import { TransactionContext } from '../../TransactionContext'
 import { Container } from './style'
 
 export function TransactionTable() {
-  useEffect(() => {
-    api.get('transaction').then((response) => console.log(response.data))
-  }, [])
+  const { transactions } = useContext(TransactionContext)
+
   return (
     <Container>
       <table>
@@ -18,18 +17,23 @@ export function TransactionTable() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Desenvolvimento de web site</td>
-            <td className="deposit">R$12.000,00</td>
-            <td>Desenvolvimento</td>
-            <td>20/05/2019</td>
-          </tr>
-          <tr>
-            <td>Aluguel</td>
-            <td className="withdraw">R$2.000,00</td>
-            <td>Casa</td>
-            <td>18/05/2019</td>
-          </tr>
+          {transactions.map((transaction) => (
+            <tr key={transaction.id}>
+              <td>{transaction.title}</td>
+              <td className={transaction.type}>
+                {Intl.NumberFormat('pt-br', {
+                  style: 'currency',
+                  currency: 'BRL',
+                }).format(transaction.amount)}
+              </td>
+              <td>{transaction.category}</td>
+              <td>
+                {Intl.DateTimeFormat('pt-BR').format(
+                  new Date(transaction.createdAt),
+                )}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </Container>
